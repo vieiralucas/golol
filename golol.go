@@ -19,13 +19,17 @@ type Image struct {
 	Full   string `json:"full"`
 }
 
-var API_KEY = os.Getenv("RIOT_API_KEY")
-var CACHE = true
+var config = struct {
+	APIKey        string
+	StaticDataUrl string
+	Cache         bool
+}{
+	os.Getenv("RIOT_API_KEY"),
+	"https://global.api.pvp.net/api/lol/static-data/",
+	true,
+}
 
 const (
-	STATIC_DATA_URL = "https://global.api.pvp.net/api/lol/static-data/"
-
-	// Regions
 	BR    = "br"
 	EU_NE = "eune"
 	EU_W  = "euw"
@@ -38,12 +42,12 @@ const (
 	TR    = "tr"
 )
 
-func SetApiKey(key string) {
-	API_KEY = key
+func SetAPIKey(key string) {
+	config.APIKey = key
 }
 
 func SetCache(c bool) {
-	CACHE = c
+	config.Cache = c
 }
 
 func request(url string, v interface{}) error {

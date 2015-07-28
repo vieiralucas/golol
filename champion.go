@@ -68,21 +68,21 @@ type Champions struct {
 var champions = make(map[string]map[string]Champion, 11)
 
 func GetChampions(region string) (map[string]Champion, error) {
-	if CACHE && champions[region] != nil {
+	if config.Cache && champions[region] != nil {
 		return champions[region], nil
 	}
 
 	url := fmt.Sprintf(
 		"%v%v/v1.2/champion?champData=allytips,altimages,blurb,enemytips,image,info,lore,partype,passive,stats,tags&api_key=%v",
-		STATIC_DATA_URL,
+		config.StaticDataUrl,
 		region,
-		API_KEY,
+		config.APIKey,
 	)
 
 	cs := Champions{}
 	err := request(url, &cs)
 
-	if CACHE {
+	if config.Cache {
 		champions[region] = cs.Data
 	}
 
@@ -90,7 +90,7 @@ func GetChampions(region string) (map[string]Champion, error) {
 }
 
 func GetChampionById(id int, region string) (Champion, error) {
-	if _, found := champions[region]; CACHE && found {
+	if _, found := champions[region]; config.Cache && found {
 		for _, c := range champions[region] {
 			if c.Id == id {
 				return c, nil
@@ -100,16 +100,16 @@ func GetChampionById(id int, region string) (Champion, error) {
 
 	url := fmt.Sprintf(
 		"%v%v/v1.2/champion/%v?champData=allytips,altimages,blurb,enemytips,image,info,lore,partype,passive,stats,tags&api_key=%v",
-		STATIC_DATA_URL,
+		config.StaticDataUrl,
 		region,
 		id,
-		API_KEY,
+		config.APIKey,
 	)
 
 	c := Champion{}
 	err := request(url, &c)
 
-	if err != nil && CACHE {
+	if err != nil && config.Cache {
 		if _, found := champions[region]; found {
 			champions[region][c.Name] = c
 		} else {
@@ -122,7 +122,7 @@ func GetChampionById(id int, region string) (Champion, error) {
 }
 
 func GetChampionByName(n string, region string) (Champion, error) {
-	if _, found := champions[region][n]; CACHE && found {
+	if _, found := champions[region][n]; config.Cache && found {
 		return champions[region][n], nil
 	}
 
