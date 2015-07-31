@@ -44,7 +44,7 @@ func SetAPIKey(key string) {
 	config.APIKey = key
 }
 
-func request(url string, v interface{}) error {
+var request = func(url string, v interface{}) error {
 	res, err := http.Get(url)
 
 	if err != nil {
