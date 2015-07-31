@@ -60,13 +60,6 @@ func TestSetAPIKey(t *testing.T) {
 	}
 }
 
-func TestSetCache(t *testing.T) {
-	SetCache(false)
-	if config.Cache != false {
-		t.Error(fmt.Sprintf("expected %v to be false", config.Cache))
-	}
-}
-
 type fakeJsonStruct struct {
 	status int
 	some   string

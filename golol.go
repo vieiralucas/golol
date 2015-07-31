@@ -22,11 +22,9 @@ type Image struct {
 var config = struct {
 	APIKey        string
 	StaticDataUrl string
-	Cache         bool
 }{
 	os.Getenv("RIOT_API_KEY"),
 	"https://global.api.pvp.net/api/lol/static-data/",
-	true,
 }
 
 const (
@@ -44,10 +42,6 @@ const (
 
 func SetAPIKey(key string) {
 	config.APIKey = key
-}
-
-func SetCache(c bool) {
-	config.Cache = c
 }
 
 func request(url string, v interface{}) error {

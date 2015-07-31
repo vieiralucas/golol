@@ -65,13 +65,7 @@ type Champions struct {
 	Data map[string]Champion `json:"data"`
 }
 
-var champions = make(map[string]map[string]Champion, 11)
-
 func GetChampions(region string) (map[string]Champion, error) {
-	if config.Cache && champions[region] != nil {
-		return champions[region], nil
-	}
-
 	url := fmt.Sprintf(
 		"%v%v/v1.2/champion?champData=allytips,altimages,blurb,enemytips,image,info,lore,partype,passive,stats,tags&api_key=%v",
 		config.StaticDataUrl,
@@ -82,22 +76,10 @@ func GetChampions(region string) (map[string]Champion, error) {
 	cs := Champions{}
 	err := request(url, &cs)
 
-	if config.Cache {
-		champions[region] = cs.Data
-	}
-
 	return cs.Data, err
 }
 
 func GetChampionById(id int, region string) (Champion, error) {
-	if _, found := champions[region]; config.Cache && found {
-		for _, c := range champions[region] {
-			if c.Id == id {
-				return c, nil
-			}
-		}
-	}
-
 	url := fmt.Sprintf(
 		"%v%v/v1.2/champion/%v?champData=allytips,altimages,blurb,enemytips,image,info,lore,partype,passive,stats,tags&api_key=%v",
 		config.StaticDataUrl,
@@ -109,23 +91,10 @@ func GetChampionById(id int, region string) (Champion, error) {
 	c := Champion{}
 	err := request(url, &c)
 
-	if err != nil && config.Cache {
-		if _, found := champions[region]; found {
-			champions[region][c.Name] = c
-		} else {
-			champions[region] = make(map[string]Champion)
-			champions[region][c.Name] = c
-		}
-	}
-
 	return c, err
 }
 
 func GetChampionByName(n string, region string) (Champion, error) {
-	if _, found := champions[region][n]; config.Cache && found {
-		return champions[region][n], nil
-	}
-
 	var cs map[string]Champion
 
 	cs, err := GetChampions(region)
@@ -134,9 +103,10 @@ func GetChampionByName(n string, region string) (Champion, error) {
 		return cs[n], err
 	}
 
-	if _, found := cs[n]; found {
-		return cs[n], nil
+	c, found := cs[n]
+	if found {
+		return c, nil
 	}
 
-	return cs[n], errors.New("Couldn't find a champion named: " + n)
+	return c, errors.New("Couldn't find a champion named: " + n)
 }
